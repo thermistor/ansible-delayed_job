@@ -1,0 +1,30 @@
+---
+
+- name: Install the delayed job service config
+  template:
+    src: delayed_job.service.j2
+    dest: /etc/systemd/system/delayed_job{% if delayed_job_instance %}_{{ delayed_job_instance }}{% endif %}@.service
+    owner: root
+    group: root
+    mode: 0644
+  register: delayed_job_service
+  notify:
+    - restart delayed_job
+
+- name: Ensure systemd is reloaded if delayed_job.service has changed
+  systemd:
+    daemon-reload: yes
+  when: delayed_job_service is changed
+
+- name: Start for first time and enable the delayed_job service
+  service:
+    name: delayed_job{% if delayed_job_instance %}_{{ delayed_job_instance }}{% endif %}@0
+    enabled: yes
+
+- name: Install the sudoers file that will allow delayed_job_user to restart passenger
+  template:
+    src: sudoers_delayed_job.j2
+    dest: /etc/sudoers.d/delayed_job{% if delayed_job_instance %}_{{ delayed_job_instance }}{% endif %}
+    owner: root
+    group: root
+    mode: 0440

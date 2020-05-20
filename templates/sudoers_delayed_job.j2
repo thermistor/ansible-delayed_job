@@ -1,0 +1,1 @@
+{{ delayed_job_user }} ALL=NOPASSWD: /bin/systemctl restart delayed_job{% if delayed_job_instance %}_{{delayed_job_instance}}{% endif %}@0

@@ -1,0 +1,38 @@
+#jinja2: trim_blocks: False
+# {{ ansible_managed }}
+#
+# based off https://gist.github.com/stevensona/17124c224b9988222824c6e1858b8169
+#
+# Keep delayed job workers running using systemd on ubuntu
+# Usage
+# Start "sudo systemctl start delayed_job@{0..3}" to start 4 worker instances
+# Enable "sudo systemctl enable delayed_job@{0..3}" to enable 4 worker instances
+# Restart "sudo systemctl restart delayed_job@{0..3}" to restart 4 worker instances
+# Disable "sudo systemctl disable delayed_job@{0..3}" to disable 4 worker instances
+# Stop "sudo systemctl stop delayed_job@{0..3}" to stop 4 worker instances
+
+[Unit]
+Description=Delayed Job Worker{% if delayed_job_instance %} - {{delayed_job_instance}}{% endif %} %i
+After=syslog.target network.target
+AssertPathExists={{ delayed_job_dir }}
+
+[Service]
+Type=simple
+WorkingDirectory={{ delayed_job_dir }}
+
+ExecStart=/bin/bash -lc '{% if delayed_job_queue %}QUEUE={{delayed_job_queue}} {% endif %}RAILS_ENV={{ delayed_job_env }} bundle exec rake jobs:work'
+KillSignal=SIGINT
+User={{ delayed_job_user }}
+Group={{ delayed_job_group }}
+UMask=0002
+
+# Restart after 1 minute delay
+Restart=on-failure
+RestartSec=60
+
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=dj_worker{% if delayed_job_instance %}_{{delayed_job_instance}}{% endif %}_%i
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+---
+# delayed_job_env:
+# delayed_job_dir:
+# delayed_job_user:
+# delayed_job_group:
+
+delayed_job_enabled: False
+delayed_job_instance: ~
+delayed_job_queue: ~

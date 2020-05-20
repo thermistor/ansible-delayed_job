@@ -1,0 +1,21 @@
+galaxy_info:
+  role_name: delayed_job
+  author: Weston Triemstra
+  description: Configure delayed_job
+  company: Netsign
+
+  license: MIT
+
+  min_ansible_version: 1.2
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+
+  galaxy_tags:
+    - delayed
+    - job
+
+dependencies: []

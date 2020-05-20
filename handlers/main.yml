@@ -1,0 +1,13 @@
+---
+
+- name: restart delayed_job
+  service:
+    name: delayed_job{% if delayed_job_instance %}_{{ delayed_job_instance }}{% endif %}@0
+    state: restarted
+  become: yes
+
+- name: reload delayed_job
+  service:
+    name: delayed_job{% if delayed_job_instance %}_{{ delayed_job_instance }}{% endif %}@0
+    state: reloaded
+  become: yes
